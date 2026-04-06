@@ -382,6 +382,7 @@ Player names are treated as **unique identifiers** (case-insensitive). All compl
 |------|-------------|----------------|
 | **3-Dart Average** | Average score per 3-dart turn | Total points scored ÷ total turns |
 | **First 9 Average** | Average over the first 3 turns (9 darts) of each leg | Avg of first 9 darts per leg |
+| **First 21 Average** | Average over the first 7 turns of each leg | Avg of the first 21 darts per leg |
 | **Checkout %** | Percentage of successful checkouts vs attempts | Successful checkouts ÷ turns where remaining was ≤ checkout range |
 | **Highest Checkout** | Highest score finished in a single turn | Track per leg |
 | **180s** | Number of maximum turns (3× T20) | Count turns where score == 180 |
