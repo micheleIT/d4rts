@@ -246,6 +246,7 @@ A player's effective starting score = `startingScore + handicap`. E.g. 501 + 100
 ### 5.3 Turn order
 
 Players throw in the order they were added. The starting player alternates each leg (standard darts convention).
+In Tournament mode, the starting player for each game is measured with a throw to the bullseye. Nearer starts the Game. The starting player alternates each leg.
 
 ---
 
