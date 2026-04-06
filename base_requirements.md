@@ -55,7 +55,7 @@ All best practices for playing steel darts (what is probably the "standard") sho
           - A vs C : C wins
           - B vs D : D wins
       - Results:
-        1. C
-        2. A
-        3. D
-        4. B
+        - 1. C
+        - 2. A
+        - 3. D
+        - 4. B
