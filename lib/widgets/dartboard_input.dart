@@ -250,7 +250,7 @@ class _NumberButton extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: enabled
                   ? theme.colorScheme.onSurface
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  : theme.colorScheme.onSurface.withOpacity(0.4),
             ),
           ),
         ),

@@ -79,7 +79,7 @@ class _MatchCard extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(10),
           color: isCompleted
-              ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+              ? colorScheme.primaryContainer.withOpacity(0.3)
               : colorScheme.surface,
         ),
         child: Column(
