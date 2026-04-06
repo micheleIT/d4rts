@@ -17,21 +17,33 @@ All best practices for playing steel darts (what is probably the "standard") sho
 - Start a new game and enter the player who attend
 - Game starts for every player at 501 (choose from 301,501,701) points (default, configurable in settings)
 - For every player there should be an option to give them a handicap (e.g. 100Points, 200Points)
-- Input are the three throws, the app should count the score
-  - use codes to make it easier to input the single throw scores
-  - d stands for double
-  - t stands for thripple
-  - that means as a example
-    - D17 == 34
-    - T20 == 60
-    - D25 == 50
-  - the inputs are all valid darts inputs
-    - 1 to 20 for the numbers with additional d and t
-    - 25 for bullseye
-    - 25d for double bullseye   
+- Choose winning legs (default: 1, configurable in settings)
+- Choose the checkout modes from: straight out, double out, tripple out, master out (default double out, configurable in settings) 
+- Scoring:
+  - Input are the three throws, the app should count the score
+    - use codes to make it easier to input the single throw scores
+    - d stands for double
+    - t stands for thripple
+    - that means as a example
+      - D17 == 34
+      - T20 == 60
+      - D25 == 50
+    - the inputs are all valid darts inputs
+      - 1 to 20 for the numbers with additional d and t
+      - 25 for bullseye
+      - 25d for double bullseye
+    - Alternatively:
+      - Create a matrix where a touch (or mouse) input can be easy released, to enter the single scores
 - To exchange results between different instances, I want a import/export feature to replace oder ammend the results an a different instance of the app.
 
+## Statistics
+
+- Gather statistics, that are important for darts. Orientate yourself on the PDC league system. They should be available with filters, today (default), overall.
+- Player Names are unique to only apply one time in the statistics. So you may assume that every "Daniel" is the same player (and so on).
+
 ## Additional features
+
+All implement the base from "What the app should deliver"
 
 - Vs mode
   - Add players
