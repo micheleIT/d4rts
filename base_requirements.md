@@ -15,7 +15,7 @@ All best practices for playing steel darts (what is probably the "standard") sho
 ## What the app should deliver
 
 - Start a new game and enter the player who attend
-- Game starts for every player at 501 points (default, configurable in settings)
+- Game starts for every player at 501 (choose from 301,501,701) points (default, configurable in settings)
 - For every player there should be an option to give them a handicap (e.g. 100Points, 200Points)
 - Input are the three throws, the app should count the score
   - use codes to make it easier to input the single throw scores
@@ -38,7 +38,7 @@ All best practices for playing steel darts (what is probably the "standard") sho
   - Play
 - Tournament mode
   - Add players
-  - Define how many groups
+  - Define how many groups (default: 2)
   - In every group every player plays against every other from the group
   - When done tied players play a 1vs1 to gain a who wins
   - After that, generate a sudden death plan with all players. You can orientate yourself like this systems are ommited during world champoinships, but enhanced with all players.
