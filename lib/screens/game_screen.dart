@@ -122,6 +122,36 @@ class _GameScreenState extends State<GameScreen> {
     _clearInputs();
   }
 
+  void _showEndGameDialog(BuildContext context, GameService gameService) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('End Game?'),
+        content: const Text(
+          'Do you want to end the current game?\n\nThe game will be abandoned and progress will be lost.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Continue Playing'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+              foregroundColor: Theme.of(ctx).colorScheme.onError,
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              gameService.reset();
+              context.go('/');
+            },
+            child: const Text('End Game'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(
@@ -136,7 +166,6 @@ class _GameScreenState extends State<GameScreen> {
           );
         }
 
-        final currentPlayer = gameService.currentPlayer;
         final theme = Theme.of(context);
 
         return Scaffold(
@@ -149,38 +178,10 @@ class _GameScreenState extends State<GameScreen> {
                 onPressed: gameService.canUndo ? _undo : null,
                 tooltip: 'Undo last turn',
               ),
-              PopupMenuButton(
-                itemBuilder: (_) => [
-                  const PopupMenuItem(
-                    value: 'quit',
-                    child: Text('Quit Game'),
-                  ),
-                ],
-                onSelected: (v) {
-                  if (v == 'quit') {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('Quit Game?'),
-                        content: const Text('Current game progress will be lost.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancel'),
-                          ),
-                          FilledButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              gameService.reset();
-                              context.go('/');
-                            },
-                            child: const Text('Quit'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
+              IconButton(
+                icon: const Icon(Icons.stop_circle_outlined),
+                tooltip: 'End Game',
+                onPressed: () => _showEndGameDialog(context, gameService),
               ),
             ],
           ),
@@ -219,44 +220,44 @@ class _GameScreenState extends State<GameScreen> {
               ),
 
               // Current player & checkout hint
-              if (currentPlayer != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ChangeNotifierProvider.value(
-                    value: gameService,
-                    child: Consumer<GameService>(
-                      builder: (ctx, gs, _) {
-                        final score =
-                            gs.getCurrentPlayerScore(currentPlayer.name);
-                        final checkout = score <= 170 ? getCheckout(score) : null;
-                        return Column(
-                          children: [
-                            Text(
-                              '${currentPlayer.name}\'s turn',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ChangeNotifierProvider.value(
+                  value: gameService,
+                  child: Consumer<GameService>(
+                    builder: (ctx, gs, _) {
+                      final activePlayer = gs.currentPlayer;
+                      if (activePlayer == null) return const SizedBox.shrink();
+                      final score = gs.getCurrentPlayerScore(activePlayer.name);
+                      final checkout = score <= 170 ? getCheckout(score) : null;
+                      return Column(
+                        children: [
+                          Text(
+                            '${activePlayer.name}\'s turn',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (checkout != null)
+                            Container(
+                              margin: const EdgeInsets.only(top: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                '🎯 $checkout',
+                                style: theme.textTheme.bodySmall,
                               ),
                             ),
-                            if (checkout != null)
-                              Container(
-                                margin: const EdgeInsets.only(top: 4),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.tertiaryContainer,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  '🎯 $checkout',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
+                        ],
+                      );
+                    },
                   ),
                 ),
+              ),
 
               const Divider(),
 
@@ -303,18 +304,18 @@ class _GameScreenState extends State<GameScreen> {
               ),
 
               // Recent turns
-              if (currentPlayer != null)
-                ChangeNotifierProvider.value(
-                  value: gameService,
-                  child: Consumer<GameService>(
-                    builder: (ctx, gs, _) {
-                      final recentTurns =
-                          gs.getRecentTurns(currentPlayer.name);
-                      if (recentTurns.isEmpty) return const SizedBox.shrink();
-                      return _RecentTurns(turns: recentTurns);
-                    },
-                  ),
+              ChangeNotifierProvider.value(
+                value: gameService,
+                child: Consumer<GameService>(
+                  builder: (ctx, gs, _) {
+                    final activePlayer = gs.currentPlayer;
+                    if (activePlayer == null) return const SizedBox.shrink();
+                    final recentTurns = gs.getRecentTurns(activePlayer.name);
+                    if (recentTurns.isEmpty) return const SizedBox.shrink();
+                    return _RecentTurns(turns: recentTurns);
+                  },
                 ),
+              ),
             ],
           ),
         );

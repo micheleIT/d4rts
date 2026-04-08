@@ -10,12 +10,14 @@ Game _makeGame({
   CheckoutMode checkoutMode = CheckoutMode.doubleOut,
   int startingScore = 501,
   int legsToWin = 1,
+  Map<String, int>? handicaps,
 }) {
   return Game(
     id: const Uuid().v4(),
     startedAt: DateTime.now(),
     players: const [Player(name: 'Alice'), Player(name: 'Bob')],
     startingScore: startingScore,
+    handicaps: handicaps,
     legsToWin: legsToWin,
     checkoutMode: checkoutMode,
   );
@@ -169,6 +171,18 @@ void main() {
         const DartThrow(baseValue: 5, multiplier: ThrowMultiplier.single),
       ]);
       expect(service.canUndo, isTrue);
+    });
+
+    test('handicap adds extra points to starting score', () {
+      final game = _makeGame(
+        startingScore: 501,
+        handicaps: {'alice': 100},
+      );
+      service.startGame(game);
+      // Alice should start at 601 (501 + 100 handicap)
+      expect(service.getCurrentPlayerScore('Alice'), 601);
+      // Bob has no handicap, stays at 501
+      expect(service.getCurrentPlayerScore('Bob'), 501);
     });
 
     test('leg wins track correctly across multiple legs', () {

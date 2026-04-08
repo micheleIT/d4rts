@@ -29,19 +29,20 @@ class ScoreDisplay extends StatelessWidget {
             : BorderSide.none,
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               playerName,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                 color: isActive ? colorScheme.onPrimaryContainer : null,
               ),
               overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               '$remainingScore',
               style: theme.textTheme.displaySmall?.copyWith(
@@ -49,21 +50,22 @@ class ScoreDisplay extends StatelessWidget {
                 color: isActive ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                legWins,
-                (i) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Icon(
+            if (legWins > 0) ...[
+              const SizedBox(height: 2),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 3,
+                runSpacing: 2,
+                children: List.generate(
+                  legWins,
+                  (i) => Icon(
                     Icons.circle,
-                    size: 10,
+                    size: 8,
                     color: isActive ? colorScheme.primary : colorScheme.outline,
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

@@ -25,10 +25,8 @@ class _DartboardInputState extends State<DartboardInput> {
     if (!dart.isValid) return;
     setState(() {
       _darts.add(dart);
-      if (_darts.length >= widget.maxDarts) {
-        // Auto-confirm
-        _confirm();
-      }
+      // Reset multiplier to single after each dart selection
+      _selectedMultiplier = ThrowMultiplier.single;
     });
   }
 

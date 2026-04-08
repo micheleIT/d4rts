@@ -103,11 +103,11 @@ class GameService extends ChangeNotifier {
         checkoutMode: _game!.checkoutMode,
       ));
     }
-    // Reset scores with handicaps applied
+    // Reset scores with handicaps applied (handicap adds extra points)
     for (final player in _game!.players) {
       final key = player.name.toLowerCase();
       final handicap = _game!.handicaps[key] ?? 0;
-      _currentScores[key] = _game!.startingScore - handicap;
+      _currentScores[key] = _game!.startingScore + handicap;
     }
   }
 
