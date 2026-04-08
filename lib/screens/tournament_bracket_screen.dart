@@ -17,6 +17,7 @@ class TournamentBracketScreen extends StatefulWidget {
 class _TournamentBracketScreenState extends State<TournamentBracketScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _autoSwitchedToKnockout = false;
 
   @override
   void initState() {
@@ -47,6 +48,35 @@ class _TournamentBracketScreenState extends State<TournamentBracketScreen>
     context.push('/game/play');
   }
 
+  Future<void> _confirmLeave(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave Tournament?'),
+        content: const Text(
+          'The tournament is still in progress. Your progress has been saved.\n\nYou can return to it from the home screen.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Keep Playing'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(
@@ -60,19 +90,28 @@ class _TournamentBracketScreenState extends State<TournamentBracketScreen>
           );
         }
 
-        return Scaffold(
+        // Auto-switch to Knockout tab once bracket is generated (once only)
+        if (!_autoSwitchedToKnockout &&
+            tournament.knockoutRounds.isNotEmpty &&
+            _tabController.index == 0) {
+          _autoSwitchedToKnockout = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _tabController.animateTo(1);
+          });
+        }
+
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) _confirmLeave(context);
+          },
+          child: Scaffold(
           appBar: AppBar(
             title: Text(
               'Tournament (${tournament.players.length} players)',
             ),
             leading: BackButton(
-              onPressed: () {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.go('/');
-                }
-              },
+              onPressed: () => _confirmLeave(context),
             ),
             bottom: TabBar(
               controller: _tabController,
@@ -98,6 +137,7 @@ class _TournamentBracketScreenState extends State<TournamentBracketScreen>
                     _playMatch(context, match, tournament),
               ),
             ],
+          ),
           ),
         );
       },

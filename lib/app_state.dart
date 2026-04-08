@@ -58,6 +58,7 @@ class AppState extends ChangeNotifier {
   List<Tournament> _tournaments = [];
   Tournament? _activeTournament;
   String? _pendingTournamentMatchId; // track if current game is a tournament match
+  bool _knockoutGenerationAttempted = false; // prevent repeated generation
   AppSettings _settings = AppSettings();
   bool _isLoading = false;
 
@@ -179,6 +180,28 @@ class AppState extends ChangeNotifier {
         group.matches[idx] = completedGame;
         // Re-rank the group
         group.standings = tournamentService.rankGroup(group);
+
+        // Check if ALL group matches across all groups are now complete
+        final allGroupMatchesDone = _activeTournament!.groups.every(
+          (g) => g.matches.every((m) => m.isCompleted),
+        );
+        if (allGroupMatchesDone &&
+            _activeTournament!.knockoutRounds.isEmpty &&
+            !_knockoutGenerationAttempted) {
+          _knockoutGenerationAttempted = true;
+          try {
+            final rounds = tournamentService.generateKnockoutBracket(
+              _activeTournament!.groups,
+              startingScore: _activeTournament!.startingScore,
+              legsToWin: _activeTournament!.legsToWin,
+              checkoutMode: _activeTournament!.checkoutMode,
+            );
+            _activeTournament!.knockoutRounds.addAll(rounds);
+          } catch (e) {
+            debugPrint('Knockout bracket generation error: $e');
+            _knockoutGenerationAttempted = false; // allow retry if error was transient
+          }
+        }
         return;
       }
     }
@@ -258,6 +281,7 @@ class AppState extends ChangeNotifier {
 
   void setActiveTournament(Tournament tournament) {
     _activeTournament = tournament;
+    _knockoutGenerationAttempted = false;
     notifyListeners();
   }
 
