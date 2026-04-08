@@ -65,7 +65,15 @@ class _TournamentBracketScreenState extends State<TournamentBracketScreen>
             title: Text(
               'Tournament (${tournament.players.length} players)',
             ),
-            leading: BackButton(onPressed: () => context.pop()),
+            leading: BackButton(
+              onPressed: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/');
+                }
+              },
+            ),
             bottom: TabBar(
               controller: _tabController,
               tabs: const [

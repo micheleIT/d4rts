@@ -65,7 +65,7 @@ class _TournamentSetupScreenState extends State<TournamentSetupScreen> {
     );
     appState.setActiveTournament(tournament);
     appState.saveTournament(tournament);
-    context.go('/tournament/bracket');
+    context.push('/tournament/bracket');
   }
 
   int get _maxGroups => (_players.length ~/ 2).clamp(1, 8);

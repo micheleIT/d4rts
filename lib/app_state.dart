@@ -67,6 +67,10 @@ class AppState extends ChangeNotifier {
   AppSettings get settings => _settings;
   bool get isLoading => _isLoading;
 
+  /// True when the currently active game is a tournament match.
+  bool get hasPendingTournamentMatch =>
+      _pendingTournamentMatchId != null && _activeTournament != null;
+
   Future<void> init() async {
     _isLoading = true;
     notifyListeners();

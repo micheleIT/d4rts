@@ -12,14 +12,21 @@ class GameResultScreen extends StatefulWidget {
 
 class _GameResultScreenState extends State<GameResultScreen> {
   bool _saved = false;
+  bool _wasTournamentGame = false;
+  bool _dependenciesInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_dependenciesInitialized) return;
+    _dependenciesInitialized = true;
+    // Capture synchronously before completeGame() clears the pending match id
+    final appState = context.read<AppState>();
+    _wasTournamentGame = appState.hasPendingTournamentMatch;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_saved) return;
       _saved = true;
-      final appState = context.read<AppState>();
       final game = appState.gameService.game;
       if (game != null && game.isCompleted) {
         await appState.completeGame(game);
@@ -153,25 +160,37 @@ class _GameResultScreenState extends State<GameResultScreen> {
 
               const Spacer(),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => context.go('/game/setup'),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Play Again'),
-                    ),
+              if (_wasTournamentGame) ...[
+                // Tournament match: only offer return to bracket
+                FilledButton.icon(
+                  onPressed: () => context.go('/tournament/bracket'),
+                  icon: const Icon(Icons.emoji_events),
+                  label: const Text('Back to Tournament'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () => context.go('/'),
-                      icon: const Icon(Icons.home),
-                      label: const Text('Home'),
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.go('/game/setup'),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Play Again'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () => context.go('/'),
+                        icon: const Icon(Icons.home),
+                        label: const Text('Home'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),

@@ -123,12 +123,16 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _showEndGameDialog(BuildContext context, GameService gameService) {
+    final appState = context.read<AppState>();
+    final isTournamentGame = appState.hasPendingTournamentMatch;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('End Game?'),
-        content: const Text(
-          'Do you want to end the current game?\n\nThe game will be abandoned and progress will be lost.',
+        content: Text(
+          isTournamentGame
+              ? 'Do you want to abandon this tournament match?\n\nThe match result will not be recorded.'
+              : 'Do you want to end the current game?\n\nThe game will be abandoned and progress will be lost.',
         ),
         actions: [
           TextButton(
@@ -143,7 +147,11 @@ class _GameScreenState extends State<GameScreen> {
             onPressed: () {
               Navigator.pop(ctx);
               gameService.reset();
-              context.go('/');
+              if (isTournamentGame) {
+                context.go('/tournament/bracket');
+              } else {
+                context.go('/');
+              }
             },
             child: const Text('End Game'),
           ),
